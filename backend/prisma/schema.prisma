@@ -1,0 +1,88 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["selectRelationCount"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id
+  email      String   @unique
+  password   String
+  name       String
+  cpf        String
+  status     Boolean
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Client {
+  id           String         @id
+  name         String
+  number       String
+  nameContact  String
+  status       Boolean
+  Service      Service[]
+  OrderService OrderService[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("clients")
+}
+
+model Service {
+  id           String         @id
+  name         String
+  price        String
+  client       Client         @relation(fields: [idCliente], references: [id])
+  idCliente    String
+  OrderService OrderService[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("services")
+}
+
+model Technicion {
+  id           String         @id
+  name         String
+  cpf          String         @unique
+  email        String
+  number       String
+  payment      String
+  OrderService OrderService[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("tecnicos")
+}
+
+model OrderService {
+  id String @id
+
+  idCliente    String
+  idService    String
+  idTechnicion String
+  client       Client     @relation(fields: [idCliente], references: [id])
+  service      Service    @relation(fields: [idService], references: [id])
+  technicion   Technicion @relation(fields: [idTechnicion], references: [id])
+  status       Boolean
+  date         String
+  plate        String
+  numOs        String
+  obs          String
+  received     Boolean    @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("orderServices")
+}
